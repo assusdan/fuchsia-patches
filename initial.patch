@@ -1,37 +1,17 @@
 diff --git a/tools/devshell/lib/fvm.sh b/tools/devshell/lib/fvm.sh
-index 2a21e1a918..5b1f7f816a 100644
+index 2a21e1a918..6e61b7cd87 100644
 --- a/tools/devshell/lib/fvm.sh
 +++ b/tools/devshell/lib/fvm.sh
-@@ -16,18 +16,19 @@ function fx-fvm-extend-image {
+@@ -15,9 +15,11 @@ function fx-fvm-extend-image {
+   if [[ $(uname) == "Darwin" ]]; then
      stat_flags+=("-x")
    fi
-   stat_output=$(stat "${stat_flags[@]}" "${fvmraw}")
--  if [[ "$stat_output" =~ Size:\ ([0-9]+) ]]; then
--    size="${BASH_REMATCH[1]}"
--    newsize=$(($size * 2))
--    # We must take a copy of the build artifact, rather than re-use it, as we
--    # need to modify it in order to extend it.
--    echo -n "Creating disk image..."
--    cp "${fvmraw}" "${fvmimg}"
--    "${ZIRCON_TOOLS_DIR}/fvm" "${fvmimg}" extend --length "${newsize}"
--    echo "done"
--  else
--    fx-error "Could not extend fvm, unable to stat fvm image"
--    return -1
--  fi
+-  stat_output=$(stat "${stat_flags[@]}" "${fvmraw}")
++  stat_output=$(LC_ALL=C stat "${stat_flags[@]}" "${fvmraw}")
 +  # change: assusdan: stat output is different in other languages
-+  # if [[ "$stat_output" =~ Size:\ ([0-9]+) ]]; then
-+  size="${BASH_REMATCH[1]}"
-+  newsize=$(($size * 2))
-+  # We must take a copy of the build artifact, rather than re-use it, as we
-+  # need to modify it in order to extend it.
-+  echo -n "Creating disk image..."
-+  cp "${fvmraw}" "${fvmimg}"
-+  "${ZIRCON_TOOLS_DIR}/fvm" "${fvmimg}" extend --length "${newsize}"
-+  echo "done"
-+  # else
-+  #   fx-error "Could not extend fvm, unable to stat fvm image"
-+  #   return -1
-+  # fi
-   return 0
- }
+   if [[ "$stat_output" =~ Size:\ ([0-9]+) ]]; then
+     size="${BASH_REMATCH[1]}"
++    echo $size
+     newsize=$(($size * 2))
+     # We must take a copy of the build artifact, rather than re-use it, as we
+     # need to modify it in order to extend it.
